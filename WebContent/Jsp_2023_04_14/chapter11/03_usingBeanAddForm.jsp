@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 <jsp:useBean class="magic.MemberBean" id="memBean"></jsp:useBean>
 <!-- magic.MemberBean.java의 public void setId(String id){} 사용함 -->
-<!-- property="id" : 넘어오는 name="id"를 받아주고, jsp:sestProperty 할때 setter로 저장 -->
+<!-- property="id" : 넘어오는 name="id"를 받아주고, jsp:setProperty 할때 setter로 저장 -->
 <%-- <jsp:setProperty property="id" name="memBean"/> --%>
 <%-- <jsp:setProperty property="name" name="memBean"/> --%>
 
