@@ -59,4 +59,6 @@ function update_check_ok(){
 		upd_frm.mem_email.focus();
 		return;
 	}
+	
+	document.upd_frm.submit();
 }

@@ -42,3 +42,23 @@ function check_ok(){
 	//폼 이름이 reg_frm 인 폼의 action 속성의 파일을 호출해 값 제출
 	document.reg_frm.submit();
 }
+
+function update_check_ok(){
+	if(upd_frm.mem_pwd.value.length == 0){  // document 생략 가능(없어도 폼 이름의 name 값을 통해 찾아감)
+		alert("패스워드는 반드시 입력해야 합니다.");
+		upd_frm.mem_pwd.focus();
+		return;
+	}
+	if(upd_frm.mem_pwd.value != upd_frm.pwd_check.value){
+		alert("패스워드가 일치하지 않습니다.");
+		upd_frm.pwd_check.focus();
+		return;
+	}
+	if(upd_frm.mem_email.value.length == 0){
+		alert("Email을 써주세요");
+		upd_frm.mem_email.focus();
+		return;
+	}
+	
+	document.upd_frm.submit();
+}

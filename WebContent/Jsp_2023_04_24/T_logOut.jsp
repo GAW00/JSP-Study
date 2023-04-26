@@ -12,7 +12,7 @@
 			%>
 				<script>
 					alert("로그아웃 되었습니다!");
-					location.href = "T_login.jsp"; // 그냥 이거 써라 sendredirect쓰지 말고 10년 늙는다..
+					document.location.href = "T_login.jsp"; // 그냥 이거 써라 sendredirect쓰지 말고 10년 늙는다..
 				</script>
 			<%
 		%>

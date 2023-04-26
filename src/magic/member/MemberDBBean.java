@@ -160,4 +160,36 @@ public class MemberDBBean {
 		}
 		return member;
 	}
+	
+	public int updateMember(MemberBean member) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		String sql = "UPDATE MEMBERT SET mem_pwd = ?, mem_email = ?, mem_addr=? WHERE mem_uid = ?";
+		int re = -1;  // 초기값 -1, 변경된 튜플 개수 1
+		
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement(sql);
+//			값 확인
+			System.out.println("@@@### get Mem_pwd ===> " + member.getMem_pwd());
+			System.out.println("@@@### get Mem_email ===> " + member.getMem_email());
+			System.out.println("@@@### get Mem_addr ===> " + member.getMem_addr());
+			System.out.println("@@@### get Mem_uid ===> " + member.getMem_uid());
+			
+			pstmt.setString(1,  member.getMem_pwd());
+			pstmt.setString(2,  member.getMem_email());
+			pstmt.setString(3,  member.getMem_addr());
+			pstmt.setString(4,  member.getMem_uid());
+			re = pstmt.executeUpdate();  // Update 문은 executeUpdate 메소드 호출
+			
+//			오류나도 출력됨
+//			System.out.print("변경 성공");
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.print("변경 실패");
+		}
+		
+		return re;
+	}
 }

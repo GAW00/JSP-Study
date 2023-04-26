@@ -5,7 +5,7 @@
 	<head>
 	<meta charset="UTF-8">
 	<title>Insert title here</title>
-	<script language="JavaScript" src="script2.js"></script>
+	<script language="JavaScript" src="script.js"></script>
 	</head>
 	<body>
 		<form method="post" name="reg_frm" action="T_registerOk.jsp">

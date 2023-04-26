@@ -1,18 +1,22 @@
+<%@page import="magic.member.MemberBean"%>
+<%@page import="magic.member.MemberDBBean"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html>
+<%
+	String id = (String)session.getAttribute("id");
+	String name = (String)session.getAttribute("name");
+	
+	MemberDBBean manager = MemberDBBean.getInstance();
+	MemberBean member = manager.getMember(id);
+%>
 <html>
 	<head>
 	<meta charset="UTF-8">
 	<title>Insert title here</title>
-	<script language="JavaScript" src="script2.js"></script>
+	<script language="JavaScript" src="script.js"></script>
 	</head>
 	<body>
-	<%
-		String id = (String)session.getAttribute("id");
-		String name = (String)session.getAttribute("name");
-	%>
-		<form method="post" name="upd_frm" action="">
+		<form method="post" name="upd_frm" action="T_memberUpdateOk.jsp">
 			<table border="1" align="center">
 				<tr height="50">
 					<td colspan="2" align="center">
@@ -41,19 +45,20 @@
 				<tr height="30">
 					<td width="80">이 름</td>
 					<td>
+<%-- 						<%= name %> --%>
 						<%= name %>
 					</td>
 				</tr>
 				<tr height="30">
 					<td width="80">E-mail</td>
 					<td>
-						<input type="text" name="mem_email" size="30">*
+						<input type="text" name="mem_email" size="30" value="<%= member.getMem_email() %>">*
 					</td>
 				</tr>
 				<tr height="30">
 					<td width="80">주 소</td>
 					<td>
-						<input type="text" name="mem_addr" size="40">
+						<input type="text" name="mem_addr" size="40" value="<%= member.getMem_addr() %>">
 					</td>
 				</tr>
 				<tr>
@@ -61,6 +66,7 @@
 						<input type="button" value="수정" onclick="update_check_ok()">
 						<input type="reset" value="다시입력">
 						<input type="button" value="수정안함" onclick="location.href='T_login.jsp'">
+<!-- 						<input type="button" value="수정안함" onclick="javascript:window.location='T_login.jsp'"> -->
 					</td>
 				</tr>
 			</table>

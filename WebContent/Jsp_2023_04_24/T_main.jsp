@@ -31,7 +31,7 @@
 				<tr>
 					<td>
 						<input type="button" value="로그아웃" onclick="javascript:window.location='T_logOut.jsp'">
-						<input type="submit" value="회원정보변경">
+						<input type="button" value="회원정보변경" onclick="javascript:window.location='T_memberUpdate.jsp'">
 					</td>
 				</tr>
 			</table>
