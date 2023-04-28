@@ -3,6 +3,13 @@ package magic.board;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -22,30 +29,25 @@ public class BoardDBBean {
 	public int insertBoard(BoardBean board) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-//		ResultSet rs = null;
-//		int max = 0;
-//		String sql = "SELECT B_ID FROM BOARDT";
-		String sql2 = "INSERT INTO BOARDT(B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT)"
-					+ "VALUES((SELECT NVL(MAX(B_ID), 0) + 1 FROM BOARDT), ?, ?, ?, ?)";
+		
+		String sql2 = "INSERT INTO BOARDT(B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, B_DATE)"
+					+ "VALUES((SELECT NVL(MAX(B_ID), 0) + 1 FROM BOARDT), ?, ?, ?, ?, ?)";
 		int re = -1;  // 초기값 -1, insert 정상 작동시 1
+		
+		Calendar calendar = Calendar.getInstance();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.KOREA);
+		
+		board.setB_date(Timestamp.valueOf(sdf.format(calendar.getTime())));
 		
 		try {
 			conn = getConnection();
 			
-//			pstmt = conn.prepareStatement(sql);
-//			rs = pstmt.executeQuery();
-//			while(rs.next()) {
-//				int bn = rs.getInt("B_ID");
-//				if(max < bn) max = bn;
-//			}
-//			max += 1;
-			
 			pstmt = conn.prepareStatement(sql2);
-//			pstmt.setInt(1, max);
 			pstmt.setString(1, board.getB_name());
 			pstmt.setString(2, board.getB_email());
 			pstmt.setString(3, board.getB_title());
 			pstmt.setString(4, board.getB_content());
+			pstmt.setTimestamp(5, board.getB_date());
 			
 			re = pstmt.executeUpdate();
 			
@@ -56,5 +58,63 @@ public class BoardDBBean {
 			e.printStackTrace();
 		}
 		return re;
+	}
+	public ArrayList<BoardBean> listBoard(){
+		ArrayList<BoardBean> result = new ArrayList<BoardBean>();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		String sql = "SELECT * FROM BOARDT ORDER BY B_ID";
+	
+		try {
+			conn = getConnection();
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			while(rs.next()) {
+				BoardBean tmp = new BoardBean();
+				tmp.setB_id(rs.getInt("B_ID"));
+				tmp.setB_name(rs.getString("B_NAME"));
+				tmp.setB_email(rs.getString("B_EMAIL"));
+				tmp.setB_title(rs.getString("B_TITLE"));
+				tmp.setB_content(rs.getString("B_CONTENT"));
+				tmp.setB_date(rs.getTimestamp("B_DATE"));
+				result.add(tmp);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	public BoardBean getBoard(int index) {
+		BoardBean board = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		String sql = "SELECT * FROM BOARDT WHERE B_ID = ?";
+		
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, index);
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				board = new BoardBean();
+				
+				board.setB_id(index);
+				board.setB_name(rs.getString("B_NAME"));
+				board.setB_email(rs.getString("B_EMAIL"));
+				board.setB_title(rs.getString("B_TITLE"));
+				board.setB_content(rs.getString("B_CONTENT"));
+				board.setB_date(rs.getTimestamp("B_DATE"));
+			}
+			rs.close();
+			pstmt.close();
+			conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return board;
 	}
 }
