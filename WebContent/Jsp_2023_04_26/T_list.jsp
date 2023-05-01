@@ -1,3 +1,5 @@
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="java.sql.Timestamp"%>
 <%@page import="magic.board.BoardBean"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="java.util.List"%>
@@ -19,7 +21,7 @@
 		<table width="80%">
 			<tr height="25">
 				<td width="5%"></td>
-				<td width="75%"></td>
+				<td colspan="2" width="75%"></td>
 				<td width="20%">
 					<a href="T_write.jsp">글 쓰 기</a>
 				</td>
@@ -29,8 +31,9 @@
 			<tr height="25">
 				<th width="5%">번호</th>
 				<th width="55%">글제목</th>
-				<th width="20%">작성자</th>
-				<th width="20%">작성일</th>
+				<th width="15%">작성자</th>
+				<th width="15%">작성일</th>
+				<th width="10%">조회수</th>
 			</tr>
 			<%
 				Iterator<BoardBean> iterator = board.iterator();
@@ -48,8 +51,11 @@
 							<td align="center">
 								<a href="mailto: <%= tmp.getB_email() %>"><%= tmp.getB_name() %></a>
 							</td>
-							<td>
-								<%= tmp.getB_date() %>
+							<td align="center">
+								<%= tmp.getB_date2() %>
+							</td>
+							<td align="center">
+								<%= tmp.getB_hit() %>
 							</td>
 						</tr>
 					<%

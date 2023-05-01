@@ -5,7 +5,7 @@
 	<head>
 	<meta charset="UTF-8">
 	<title>Insert title here</title>
-	<script language="JavaScript" src="board.js"></script>
+	<script language="JavaScript" src="board2.js"></script>
 	</head>
 	<body>
 		<form method="post" name="board_frm" action="T_write_ok.jsp">
@@ -42,6 +42,14 @@
 						<textarea cols="70" rows="10" name="b_content"></textarea>
 					</td>
 				</tr>
+				<tr>
+					<td>
+						암 호
+					</td>
+					<td>
+						<input type="password" name="b_pwd" size="10" maxlength="12">
+					</td>
+				</tr>
 				<tr height="50" align="center">
 					<td colspan="4">
 						<input type="button" value="글쓰기" onclick="check_ok()">&nbsp;
@@ -49,6 +57,7 @@
 						<input type="button" value="글목록" onclick="location.href='T_list.jsp'">
 					</td>
 				</tr>
+				
 			</table>
 		</form>
 	</body>
