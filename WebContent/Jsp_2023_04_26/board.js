@@ -1,6 +1,5 @@
 //유효성 검사(validation check)
 function check_ok(){
-	System.out.println("도달1");
 	if(board_frm.b_name.value.length == 0){  // document 생략 가능(없어도 폼 이름의 name 값을 통해 찾아감)
 		alert("작성자를 써주세요");
 		board_frm.b_name.focus();
@@ -25,7 +24,6 @@ function check_ok(){
 }
 
 function delete_ok(){
-	System.out.println("도달2");
 	if(dlt_frm.validation.value.length == 0){
 		alert("비밀번호를 입력하세요");
 		dlt_frm.validation.focus();

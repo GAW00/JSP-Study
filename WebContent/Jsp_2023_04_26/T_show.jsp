@@ -6,7 +6,7 @@
 <%
 	int index = Integer.parseInt(request.getParameter("index"));
 	BoardDBBean manager = BoardDBBean.getInstance();
-	BoardBean board = manager.getBoard(index);
+	BoardBean board = manager.getBoard(index, true);
 	session.setAttribute("index", index);
 %>
 <html>
@@ -15,7 +15,7 @@
 	<title>Insert title here</title>
 	</head>
 	<body>
-		<h1 align="center">게시판에 등록된 글 목록 보기</h1>
+		<h1 align="center">글 내 용 보 기</h1>
 		<center>
 			<center>
 				<table name="show_frm" width="80%" border="2" cellspacing="0">
@@ -57,7 +57,9 @@
 					</tr>
 					<tr>
 						<td colspan="4" align="right">
-							<input type="button" value="글삭제" onclick="location.href='T_delete.jsp'">
+							<input type="button" value="글수정" onclick="location.href='T_edit.jsp?index=<%= index %>'">&nbsp&nbsp&nbsp
+							<input type="button" value="글삭제" onclick="location.href='T_delete.jsp?index=<%= index %>'">&nbsp&nbsp&nbsp
+							<input type="button" value="글목록" onclick="location.href='T_list.jsp'">
 						</td>
 					</tr>
 				</table>

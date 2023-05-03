@@ -9,9 +9,10 @@
 	BoardDBBean db=BoardDBBean.getInstance();
 // 	호출된 메소드의 반환 타입으로 받아주면 됨
 	ArrayList<BoardBean> boardList = db.listBoard();
-	int b_id=0;
+	int b_id=0, b_hit=0;
 	String b_name, b_email, b_title, b_content;
-	Timestamp b_date;
+// 	Timestamp b_date;
+	String b_date;
 	SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
 %>
 <html>
@@ -37,6 +38,7 @@
 				<td width="450" align="center">글제목</td>
 				<td width="120" align="center">작성자</td>
 				<td width="130" align="center">작성일</td>
+				<td width="60" align="center">조회수</td>
 			</tr>
 			<%
 	// 			boardList 에 있는 오라클 데이터를 가져옴
@@ -49,7 +51,9 @@
 					b_email = board.getB_email();
 					b_title = board.getB_title();
 					b_content = board.getB_content();
-					b_date = board.getB_date();
+// 					b_date = board.getB_date();
+					b_date = board.getB_date2();
+					b_hit = board.getB_hit();
 			%>
 			<tr bgcolor="#f7f7f7"
 				onmouseover="this.style.backgroundColor='#eeeeef'"
@@ -68,8 +72,11 @@
 					</a>
 				</td>
 				<td align="center">
-<%-- 					<%= b_date %> --%>
-					<%= sdf.format(b_date) %>
+					<%= b_date %>
+<%-- 					<%= sdf.format(b_date) %> --%>
+				</td>
+				<td align="center">
+					<%= b_hit %>
 				</td>
 			</tr>
 			<%

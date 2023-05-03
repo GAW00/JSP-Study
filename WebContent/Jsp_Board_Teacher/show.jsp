@@ -26,6 +26,10 @@
 <%-- 					<%= bid %> --%>
 					<%= board.getB_id() %>
 				</td>
+				<td width="100">조회수</td>
+				<td width="200">
+					<%= board.getB_hit() %>
+				</td>
 			</tr>
 			<tr height="30" align="center">
 				<td width="100">작성자</td>
@@ -48,6 +52,11 @@
 				<td width="100">글내용</td>
 				<td width="200" align="left">
 					<%= board.getB_content() %>
+				</td>
+			</tr>
+			<tr height="30">
+				<td colspan="4" align="right">
+					<input type="button" value="글삭제" onclick="location.href='delete.jsp?b_id=<%= board.getB_id() %>'">
 				</td>
 			</tr>
 		</table>

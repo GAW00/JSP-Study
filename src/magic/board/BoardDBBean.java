@@ -30,9 +30,9 @@ public class BoardDBBean {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		
-		String sql2 = "INSERT INTO BOARDT(B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, B_DATE, B_PWD) "
+		String sql2 = "INSERT INTO BOARDT(B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, B_DATE, B_PWD, b_IP) "
 //					+ "VALUES((SELECT NVL(MAX(B_ID), 0) + 1 FROM BOARDT), ?, ?, ?, ?, TO_CHAR(B_DATE, 'YYYY-MM-DD HH24:MM'))";
-					+ "VALUES((SELECT NVL(MAX(B_ID), 0) + 1 FROM BOARDT), ?, ?, ?, ?, ?, ?)";
+					+ "VALUES((SELECT NVL(MAX(B_ID), 0) + 1 FROM BOARDT), ?, ?, ?, ?, ?, ?, ?)";
 		int re = -1;  // 초기값 -1, insert 정상 작동시 1
 		
 		try {
@@ -45,6 +45,7 @@ public class BoardDBBean {
 			pstmt.setString(4, board.getB_content());
 			pstmt.setTimestamp(5, board.getB_date());
 			pstmt.setString(6, board.getB_pwd());
+			pstmt.setString(7, board.getB_ip());
 			
 			re = pstmt.executeUpdate();
 			
@@ -61,7 +62,7 @@ public class BoardDBBean {
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
-		String sql = "SELECT B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, TO_CHAR(B_DATE,'YYYY-MM-DD HH24:MM') B_DATE, B_HIT, B_PWD FROM BOARDT ORDER BY B_ID";
+		String sql = "SELECT B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, TO_CHAR(B_DATE,'YYYY-MM-DD HH24:MM') B_DATE, B_HIT, B_PWD, B_IP FROM BOARDT ORDER BY B_ID";
 		
 		try {
 			conn = getConnection();
@@ -77,6 +78,7 @@ public class BoardDBBean {
 				tmp.setB_date2(rs.getString("B_DATE"));
 				tmp.setB_hit(rs.getInt("B_HIT"));
 				tmp.setB_pwd(rs.getString("B_PWD"));
+				tmp.setB_ip(rs.getString("B_IP"));
 				result.add(tmp);
 			}
 		} catch (Exception e) {
@@ -84,7 +86,7 @@ public class BoardDBBean {
 		}
 		return result;
 	}
-	public BoardBean getBoard(int index) {
+	public BoardBean getBoard(int index, boolean tf) {
 		BoardBean board = null;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -93,13 +95,15 @@ public class BoardDBBean {
 		
 		String sql = "UPDATE BOARDT SET B_HIT = B_HIT + 1 WHERE B_ID = ?";
 //		String sql2 = "SELECT B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, TO_CHAR(B_DATE,'YYYY-MM-DD HH24:MM') B_DATE, B_HIT, B_PWD FROM BOARDT WHERE B_ID = ?";
-		String sql2 = "SELECT rownum, a.* FROM(SELECT B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, TO_CHAR(B_DATE,'YYYY-MM-DD HH24:MM') B_DATE, B_HIT, B_PWD FROM BOARDT WHERE B_ID = ?) a";
-		
+		String sql2 = "SELECT rownum, a.* FROM(SELECT B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, TO_CHAR(B_DATE,'YYYY-MM-DD HH24:MM') B_DATE, B_HIT, B_PWD, P_IP FROM BOARDT WHERE B_ID = ?) a";
+//		rownum 받아서 쓰면 글 번호 항상 1234 로 가능 할듯
 		try {
 			conn = getConnection();
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, index);
-			re = pstmt.executeUpdate();
+			if(tf == true) {
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, index);
+				re = pstmt.executeUpdate();
+			}
 			
 			pstmt = conn.prepareStatement(sql2);
 			pstmt.setInt(1, index);
@@ -116,6 +120,7 @@ public class BoardDBBean {
 				board.setB_date2(rs.getString("B_DATE"));
 				board.setB_hit(rs.getInt("B_HIT"));
 				board.setB_pwd(rs.getString("B_PWD"));
+				board.setB_ip(rs.getString("B_IP"));
 			}
 			rs.close();
 			pstmt.close();
@@ -156,6 +161,39 @@ public class BoardDBBean {
 				else {
 					return false;
 				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	public boolean editBoard(int index, BoardBean board) {
+		BoardBean board_origin = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		String sql = "UPDATE BOARDT SET B_NAME = ?, B_EMAIL = ?, B_TITLE = ?, B_CONTENT = ? WHERE B_ID = ?";
+		
+		try {
+			conn = getConnection();
+			board_origin = getBoard(index, false);
+			
+			
+			if(board_origin.getB_pwd().equals(board.getB_pwd())) {
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, board.getB_name());
+				pstmt.setString(2, board.getB_email());
+				pstmt.setString(3, board.getB_title());
+				pstmt.setString(4, board.getB_content());
+				pstmt.setInt(5, index);
+				pstmt.executeUpdate();
+
+				pstmt.close();
+				conn.close();
+				
+				return true;
+			}
+			else {
+				return false;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

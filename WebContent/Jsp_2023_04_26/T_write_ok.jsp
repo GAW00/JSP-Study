@@ -1,3 +1,5 @@
+<%@page import="java.net.UnknownHostException"%>
+<%@page import="java.net.InetAddress"%>
 <%@page import="java.sql.Timestamp"%>
 <%@page import="magic.board.BoardDBBean"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -14,6 +16,27 @@
 		<%
 			BoardDBBean manager = BoardDBBean.getInstance();
 			board.setB_date(new Timestamp(System.currentTimeMillis()));
+// 			board.setB_ip(request.getRemoteAddr());
+
+			InetAddress local = null;
+			try {
+				local = InetAddress.getLocalHost();
+			}
+			catch ( UnknownHostException e ) {
+				e.printStackTrace();
+			}
+				
+			if( local == null ) {
+				board.setB_ip("");
+			}
+			else {
+				String ip = local.getHostAddress();
+				board.setB_ip(ip);
+			}
+
+			
+			System.out.println(board.getB_ip());
+			
 			int re = manager.insertBoard(board);
 			if(re == 1){
 		%>

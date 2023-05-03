@@ -2,10 +2,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%
-	Object obj_getdata = session.getAttribute("index");
-// 	String str_getdata = (String)obj_getdata;
-// 	int index = Integer.parseInt(str_getdata);
-	int index = (Integer)obj_getdata;
+// 	Object obj_getdata = session.getAttribute("index");
+// 	int index = (Integer)obj_getdata;
+	int index = Integer.parseInt(request.getParameter("index"));
 	String val = request.getParameter("validation");
 	BoardDBBean manager = BoardDBBean.getInstance();
 	

@@ -43,9 +43,9 @@ public class BoardDBBean {
 //				number = 1;
 //			}
 			
-			sql="INSERT INTO boardT(b_id, b_name, b_email, b_title, b_content, b_date) "
+			sql="INSERT INTO boardT(b_id, b_name, b_email, b_title, b_content, b_date, b_pwd) "
 //					+ "VALUES(?,?,?,?,?)";
-					+ "VALUES((SELECT nvl(max(b_id),0)+1 FROM boardT),?,?,?,?,?)";
+					+ "VALUES((SELECT nvl(max(b_id),0)+1 FROM boardT),?,?,?,?,?,?)";
 			
 			pstmt = conn.prepareStatement(sql);
 //			pstmt.setInt(1, number);
@@ -54,6 +54,7 @@ public class BoardDBBean {
 			pstmt.setString(3, board.getB_title());
 			pstmt.setString(4, board.getB_content());
 			pstmt.setTimestamp(5, board.getB_date());
+			pstmt.setString(6, board.getB_pwd());
 			re = pstmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -66,7 +67,9 @@ public class BoardDBBean {
 		Connection conn=null;
 		Statement stmt=null;
 		ResultSet rs=null;
-		String sql="SELECT b_id, b_name, b_email, b_title, b_content, b_date "
+//		String sql="SELECT b_id, b_name, b_email, b_title, b_content, b_date "
+				String sql="SELECT b_id, b_name, b_email, b_title, b_content"
+						+ ", TO_CHAR(b_date,'YYYY-MM-DD HH24:MI'), b_hit, b_pwd "
 				   + "FROM boardT ORDER BY b_id";
 		ArrayList<BoardBean> boardList=new ArrayList<BoardBean>();
 		
@@ -84,7 +87,10 @@ public class BoardDBBean {
 				board.setB_email(rs.getString(3));
 				board.setB_title(rs.getString(4));
 				board.setB_content(rs.getString(5));
-				board.setB_date(rs.getTimestamp(6));
+//				board.setB_date(rs.getTimestamp(6));
+				board.setB_date2(rs.getString(6));
+				board.setB_hit(rs.getInt(7));
+				board.setB_pwd(rs.getString(8));
 //				여기까지가 1행을 가져와서 저장
 				
 //				행의 데이터를 ArrayList 에 저장
@@ -101,12 +107,22 @@ public class BoardDBBean {
 		Connection conn=null;
 		PreparedStatement pstmt=null;
 		ResultSet rs=null;
-		String sql="SELECT b_id, b_name, b_email, b_title, b_content, b_date "
-				   + "FROM boardT WHERE b_id=?";
+//		String sql="SELECT b_id, b_name, b_email, b_title, b_content, b_date "
+//				   + "FROM boardT WHERE b_id=?";
+		String sql="";
 		BoardBean board=null;
 		
 		try {
 			conn = getConnection();
+//			조회수 1증가 SQL
+			sql = "UPDATE boardT SET b_hit=b_hit+1 WHERE b_id=?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, bid);
+			pstmt.executeUpdate();
+			
+//			글내용 보기
+			sql="SELECT b_id, b_name, b_email, b_title, b_content, b_date, b_hit, b_pwd "
+				   + "FROM boardT WHERE b_id=?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, bid);
 			rs = pstmt.executeQuery();
@@ -120,6 +136,8 @@ public class BoardDBBean {
 				board.setB_title(rs.getString(4));
 				board.setB_content(rs.getString(5));
 				board.setB_date(rs.getTimestamp(6));
+				board.setB_hit(rs.getInt(7));
+				board.setB_pwd(rs.getString(8));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -127,7 +145,52 @@ public class BoardDBBean {
 		
 		return board;
 	}
+	
+	public int deleteBoard(int b_id, String b_pwd) {
+		Connection conn=null;
+		PreparedStatement pstmt=null;
+		ResultSet rs=null;
+		String sql="";
+		String pwd="";
+		int re=-1;
+		
+		try {
+			conn = getConnection();
+//			글번호로 비밀번호 조회
+			sql = "SELECT b_pwd FROM boardT WHERE b_id=?";
+			//sql = "DELETE FROM boardT WHERE b_id=? AND b_pwd=?";
+			pstmt = conn.prepareStatement(sql);
+//			쿼리 파라미터는 메소드 매개변수
+			pstmt.setInt(1, b_id);
+			rs = pstmt.executeQuery();
+			
+			if (rs.next()) {//비밀번호가 있으면 참
+//				쿼리결과에서 b_pwd 컬럼 데이터
+				pwd = rs.getString(1);
+				if (pwd.equals(b_pwd)) {//비밀번호가 일치
+//					삭제 쿼리 실행
+					sql = "DELETE FROM boardT WHERE b_id=?";
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setInt(1, b_id);
+					pstmt.executeUpdate();
+					re=1;//정상적으로 삭제
+				} else {
+					re=0;//삭제 안됨
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return re;
+	}
 }
+
+
+
+
+
+
 
 
 

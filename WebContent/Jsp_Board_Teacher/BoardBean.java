@@ -9,6 +9,28 @@ public class BoardBean {
 	private String b_title; 	 
 	private String b_content;
 	private Timestamp b_date;
+	private String b_date2;//화면 출력용
+	private int b_hit;
+	private String b_pwd;
+	
+	public String getB_pwd() {
+		return b_pwd;
+	}
+	public void setB_pwd(String b_pwd) {
+		this.b_pwd = b_pwd;
+	}
+	public int getB_hit() {
+		return b_hit;
+	}
+	public void setB_hit(int b_hit) {
+		this.b_hit = b_hit;
+	}
+	public String getB_date2() {
+		return b_date2;
+	}
+	public void setB_date2(String b_date2) {
+		this.b_date2 = b_date2;
+	}
 	
 	public Timestamp getB_date() {
 		return b_date;
