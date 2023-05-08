@@ -13,6 +13,9 @@ public class BoardBean {
 	private int b_hit;
 	private String b_pwd;
 	private String b_ip;
+	private int b_ref = 0;
+	private int b_step = 0;
+	private int b_level = 0;
 	
 	public int getB_id() {
 		return b_id;
@@ -73,6 +76,24 @@ public class BoardBean {
 	}
 	public void setB_ip(String b_ip) {
 		this.b_ip = b_ip;
+	}
+	public int getB_ref() {
+		return b_ref;
+	}
+	public void setB_ref(int b_ref) {
+		this.b_ref = b_ref;
+	}
+	public int getB_step() {
+		return b_step;
+	}
+	public void setB_step(int b_step) {
+		this.b_step = b_step;
+	}
+	public int getB_level() {
+		return b_level;
+	}
+	public void setB_level(int b_level) {
+		this.b_level = b_level;
 	}
 	
 }

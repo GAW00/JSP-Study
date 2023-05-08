@@ -29,16 +29,54 @@ public class BoardDBBean {
 	public int insertBoard(BoardBean board) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql;
 		
-		String sql2 = "INSERT INTO BOARDT(B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, B_DATE, B_PWD, b_IP) "
-//					+ "VALUES((SELECT NVL(MAX(B_ID), 0) + 1 FROM BOARDT), ?, ?, ?, ?, TO_CHAR(B_DATE, 'YYYY-MM-DD HH24:MM'))";
-					+ "VALUES((SELECT NVL(MAX(B_ID), 0) + 1 FROM BOARDT), ?, ?, ?, ?, ?, ?, ?)";
+		
 		int re = -1;  // 초기값 -1, insert 정상 작동시 1
+		
+		int number;
+		int id = board.getB_id();
+		int ref = board.getB_ref();
+		int step = board.getB_step();
+		int level = board.getB_level();
 		
 		try {
 			conn = getConnection();
+			sql = "SELECT MAX(B_ID) FROM BOARDT";
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
 			
-			pstmt = conn.prepareStatement(sql2);
+			if(rs.next()) {
+				number = rs.getInt(1) + 1;
+			}
+			else {
+				number = 1;
+			}
+//			경우 1) 글 번호를 가지고 오는 경우(답변)
+//			경우 2) 글 번호를 가지고 오지 않는 경우(신규글)
+			if(id != 0) { // 글번호를 가지고 오는 경우(답변)
+//				특정 조건에 step + 1 로 업데이트
+				 sql = "UPDATE BOARDT SET B_STEP = B_STEP + 1 WHERE B_REF = ? AND B_STEP > ?";
+				 pstmt = conn.prepareCall(sql);
+				 pstmt.setInt(1, ref);
+				 pstmt.setInt(2, step);
+				 pstmt.executeUpdate();
+				 
+				step += 1;
+				level += 1;
+			}
+			else {		  // 글번호를 가지고 오지 않는 경우(신규글)
+				ref = number;
+				step = 0;
+				level = 0;
+			}
+			
+			sql = "INSERT INTO BOARDT(B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, B_DATE, B_PWD, B_IP, B_REF, B_STEP, B_LEVEL) "
+					+ "VALUES((SELECT NVL(MAX(B_ID), 0) + 1 FROM BOARDT), ?, ?, ?, ?, ?, ?, ?"
+					+ ", ?, ?, ?)";
+			
+			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, board.getB_name());
 			pstmt.setString(2, board.getB_email());
 			pstmt.setString(3, board.getB_title());
@@ -46,6 +84,9 @@ public class BoardDBBean {
 			pstmt.setTimestamp(5, board.getB_date());
 			pstmt.setString(6, board.getB_pwd());
 			pstmt.setString(7, board.getB_ip());
+			pstmt.setInt(8, ref);
+			pstmt.setInt(9, step);
+			pstmt.setInt(10, level);
 			
 			re = pstmt.executeUpdate();
 			
@@ -62,7 +103,8 @@ public class BoardDBBean {
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
-		String sql = "SELECT B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, TO_CHAR(B_DATE,'YYYY-MM-DD HH24:MM') B_DATE, B_HIT, B_PWD, B_IP FROM BOARDT ORDER BY B_ID";
+		String sql = "SELECT B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, TO_CHAR(B_DATE,'YYYY-MM-DD HH24:MM') B_DATE, B_HIT, B_PWD, B_IP"
+				        + ", B_REF, B_STEP, B_LEVEL FROM BOARDT ORDER BY B_REF DESC, B_STEP"; // ref desc => 최신 순, step asc => 답글 순
 		
 		try {
 			conn = getConnection();
@@ -79,6 +121,9 @@ public class BoardDBBean {
 				tmp.setB_hit(rs.getInt("B_HIT"));
 				tmp.setB_pwd(rs.getString("B_PWD"));
 				tmp.setB_ip(rs.getString("B_IP"));
+				tmp.setB_ref(rs.getInt("B_REF"));
+				tmp.setB_step(rs.getInt("B_STEP"));
+				tmp.setB_level(rs.getInt("B_LEVEL"));
 				result.add(tmp);
 			}
 		} catch (Exception e) {
@@ -95,7 +140,8 @@ public class BoardDBBean {
 		
 		String sql = "UPDATE BOARDT SET B_HIT = B_HIT + 1 WHERE B_ID = ?";
 //		String sql2 = "SELECT B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, TO_CHAR(B_DATE,'YYYY-MM-DD HH24:MM') B_DATE, B_HIT, B_PWD FROM BOARDT WHERE B_ID = ?";
-		String sql2 = "SELECT rownum, a.* FROM(SELECT B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, TO_CHAR(B_DATE,'YYYY-MM-DD HH24:MM') B_DATE, B_HIT, B_PWD, P_IP FROM BOARDT WHERE B_ID = ?) a";
+		String sql2 = "SELECT rownum, a.* FROM(SELECT B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, TO_CHAR(B_DATE,'YYYY-MM-DD HH24:MM') B_DATE, B_HIT, B_PWD"
+						+ ", B_IP, B_REF, B_STEP, B_LEVEL FROM BOARDT WHERE B_ID = ?) a";
 //		rownum 받아서 쓰면 글 번호 항상 1234 로 가능 할듯
 		try {
 			conn = getConnection();
@@ -109,9 +155,9 @@ public class BoardDBBean {
 			pstmt.setInt(1, index);
 			rs = pstmt.executeQuery();
 			
+			
 			if(rs.next()) {
 				board = new BoardBean();
-				
 				board.setB_id(index);
 				board.setB_name(rs.getString("B_NAME"));
 				board.setB_email(rs.getString("B_EMAIL"));
@@ -121,6 +167,10 @@ public class BoardDBBean {
 				board.setB_hit(rs.getInt("B_HIT"));
 				board.setB_pwd(rs.getString("B_PWD"));
 				board.setB_ip(rs.getString("B_IP"));
+				board.setB_ref(rs.getInt("B_REF"));
+				board.setB_step(rs.getInt("B_STEP"));
+				board.setB_level(rs.getInt("B_LEVEL"));
+				
 			}
 			rs.close();
 			pstmt.close();

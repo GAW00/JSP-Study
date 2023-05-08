@@ -10,6 +10,8 @@
 <%
 	BoardDBBean manager = BoardDBBean.getInstance();
 	ArrayList<BoardBean> board = manager.listBoard();
+	
+	int b_level = 0;
 %>
 <html>
 	<head>
@@ -36,28 +38,49 @@
 				<th width="10%">조회수</th>
 			</tr>
 			<%
-				Iterator<BoardBean> iterator = board.iterator();
-				while(iterator.hasNext()){
-// 				for(int i = 0; i < board.size(); i++){
-					BoardBean tmp = iterator.next();
+				for(int i = 0; i < board.size(); i++){
+					BoardBean data = board.get(i);
+					int b_id = data.getB_id();
+					String b_title = data.getB_title();
+					String b_name = data.getB_name();
+					String b_email = data.getB_email();
+					String b_date = data.getB_date2();
+					int b_hit = data.getB_hit();
+					b_level = data.getB_level();
+					
 					%>
-						<tr height="25" onmouseover="this.style.background = '#ccc'" onmouseout="this.style.background = 'white'">
-							<td align="center">
-								<%= tmp.getB_id() %>
-							</td>
-							<td>
-								<a href="T_show.jsp?index=<%= tmp.getB_id() %>"><%= tmp.getB_title() %></a>
-							</td>
-							<td align="center">
-								<a href="mailto: <%= tmp.getB_email() %>"><%= tmp.getB_name() %></a>
-							</td>
-							<td align="center">
-								<%= tmp.getB_date2() %>
-							</td>
-							<td align="center">
-								<%= tmp.getB_hit() %>
-							</td>
-						</tr>
+			
+					<tr height="25" onmouseover="this.style.background = '#ccc'" onmouseout="this.style.background = 'white'">
+						<td align="center">
+							<%= b_id %>
+						</td>
+						<td>
+							<%
+// 								b_level 기준으로 댓글용 화살표 이미지를 들여쓰기로 출력
+								if(b_level > 0) { // 답변글
+									for(int j = 0; j < b_level; j++){ // b_level 기준으로 들여쓰기의 길이를 결정
+										%>
+											&nbsp;
+										<%
+									}
+	// 								들여쓰기 적용된 후 => 이미지 추가
+									%>
+										<img src="../images/AnswerLine.gif" width="16" height="16">
+									<%
+								}
+							%>
+							<a href="T_show.jsp?index=<%= b_id %>"><%= b_title %></a>
+						</td>
+						<td align="center">
+							<a href="mailto: <%= b_email %>"><%= b_name %></a>
+						</td>
+						<td align="center">
+							<%= b_date %>
+						</td>
+						<td align="center">
+							<%= b_hit %>
+						</td>
+					</tr>
 					<%
 				}
 			%>
