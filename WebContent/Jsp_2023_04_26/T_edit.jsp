@@ -3,6 +3,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%
+//	전달받는 페이지 번호 저장
+	String pageNum = request.getParameter("pageNum");
+
 	int index = Integer.parseInt(request.getParameter("index"));
 	BoardDBBean manager = BoardDBBean.getInstance();
 	BoardBean board = manager.getBoard(index, false);
@@ -14,7 +17,7 @@
 	<script language="JavaScript" src="board.js"></script>
 	</head>
 	<body>
-		<form method="post" name="board_frm" action="T_edit_ok.jsp?index=<%= index %>">
+		<form method="post" name="board_frm" action="T_edit_ok.jsp?index=<%= index %>&pageNum=<%= pageNum %>">
 			<table align="center">
 				<tr height="50">
 					<td colspan="4" align="center">
@@ -60,7 +63,7 @@
 					<td colspan="4">
 						<input type="button" value="글수정" onclick="check_ok()">&nbsp;
 						<input type="reset" value="다시작성">&nbsp;
-						<input type="button" value="글목록" onclick="location.href='T_list.jsp'">
+						<input type="button" value="글목록" onclick="location.href='T_list.jsp?pageNum=<%= pageNum %>'">
 					</td>
 				</tr>
 			</table>

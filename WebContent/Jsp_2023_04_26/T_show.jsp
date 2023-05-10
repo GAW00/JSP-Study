@@ -4,6 +4,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%
+	//	전달받는 페이지 번호 저장
+	String pageNum = request.getParameter("pageNum");
+
 	int index = Integer.parseInt(request.getParameter("index"));
 	BoardDBBean manager = BoardDBBean.getInstance();
 	BoardBean board = manager.getBoard(index, true);
@@ -57,10 +60,10 @@
 					</tr>
 					<tr>
 						<td colspan="4" align="right">
-							<input type="button" value="글수정" onclick="location.href='T_edit.jsp?index=<%= index %>'">&nbsp&nbsp&nbsp
-							<input type="button" value="글삭제" onclick="location.href='T_delete.jsp?index=<%= index %>'">&nbsp&nbsp&nbsp
-							<input type="button" value="답변글" onclick="location.href='T_write.jsp?p_index=<%= index %>'">&nbsp&nbsp&nbsp
-							<input type="button" value="글목록" onclick="location.href='T_list.jsp'">
+							<input type="button" value="글수정" onclick="location.href='T_edit.jsp?index=<%= index %>&pageNum=<%= pageNum %>'">&nbsp&nbsp&nbsp
+							<input type="button" value="글삭제" onclick="location.href='T_delete.jsp?index=<%= index %>&pageNum=<%= pageNum %>'">&nbsp&nbsp&nbsp
+							<input type="button" value="답변글" onclick="location.href='T_write.jsp?p_index=<%= index %>&pageNum=<%= pageNum %>'">&nbsp&nbsp&nbsp
+							<input type="button" value="글목록" onclick="location.href='T_list.jsp?pageNum=<%= pageNum %>'">
 						</td>
 					</tr>
 				</table>

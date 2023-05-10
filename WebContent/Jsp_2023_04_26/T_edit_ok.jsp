@@ -4,6 +4,9 @@
     pageEncoding="UTF-8"%>
 <% request.setCharacterEncoding("utf-8"); %>
 <%
+	// 전달받는 페이지 번호 저장
+	String pageNum = request.getParameter("pageNum");
+
 	int index = Integer.parseInt(request.getParameter("index"));
 %>
 <% request.setCharacterEncoding("utf-8"); %>
@@ -28,7 +31,7 @@
 				%>
 					<script>
 						alert("글 수정 성공!");
-						document.location.href="T_list.jsp";
+						document.location.href="T_list.jsp?pageNum=" + pageNum;
 					</script>
 				<%
 			}

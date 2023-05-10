@@ -2,6 +2,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%
+	// 전달받는 페이지 번호 저장
+	String pageNum = request.getParameter("pageNum");
+
 // 	Object obj_getdata = session.getAttribute("index");
 // 	int index = (Integer)obj_getdata;
 	int index = Integer.parseInt(request.getParameter("index"));
@@ -12,7 +15,7 @@
 		%>
 			<script>
 				alert("글이 삭제되었습니다!!");
-				location.href="T_list.jsp";
+				location.href="T_list.jsp?pageNum=" + pageNum;
 			</script>
 		<%
 	}

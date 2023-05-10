@@ -17,6 +17,41 @@ public class BoardBean {
 	private int b_step = 0;
 	private int b_level = 0;
 	
+	public static int pageSize = 10; // 한 페이지당 10개의 게시물을 출력
+	public static int pageCount = 1; // 총 페이지 수(초기화 1)
+	public static int pageNum = 1; // 현재 페이지 번호
+	
+//	반환 : [이전] + 페이지 번호 + [다음]
+//	limit : 페이지 화면 출력 개수 (ex> 4개 : [1] [2] [3] [4] 4개까지만 표시)
+	public static String pageNumber(int limit) {
+		String str = "";
+		int temp = (pageNum - 1) % limit; // startPage를 구하기 위한 임시 변수
+		int startPage = pageNum - temp;   // 페이지 리스트의 첫 리스트 숫자 (ex> [이전] [13] [14] [15] [16] [다음] 이면 '13')
+		System.out.println(pageNum + " : " + temp + " && " + startPage);
+		// [이전] 출력 여부
+		if((startPage - limit) > 0) {
+			str = "<a href='T_list.jsp?pageNum="+(startPage - 1)+"'>[이전]</a>&nbsp;&nbsp;";
+		}
+		
+		// 페이지 번호 나열하기
+		for (int i = startPage; i < (startPage + limit); i++) {
+			if(i == pageNum) { // 페이지 리스트에서 현재 선택되어 있는 페이지는 하이퍼 링크 X 
+				str += "[" + i + "]&nbsp;&nbsp;";
+			}
+			else {
+				str += "<a href='T_list.jsp?pageNum=" + i + "'>" + "[" + i + "]</a>&nbsp;&nbsp;";
+			}
+			if(i >= pageCount) break;
+		}
+		
+		// [다음] 출력 여부
+		if((startPage + limit) <= pageCount) {
+			str += "<a href='T_list.jsp?pageNum="+(startPage + limit)+"'>[다음]</a>";
+		}
+		
+		return str;
+	}
+	
 	public int getB_id() {
 		return b_id;
 	}

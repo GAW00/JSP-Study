@@ -1,6 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%
+	// 전달받는 페이지 번호 저장
+	String pageNum = request.getParameter("pageNum");
+
 	int index = Integer.parseInt(request.getParameter("index"));
 %>
 <html>
@@ -13,7 +16,7 @@
 		<center>
 			<h1>글 삭 제 하 기</h1>
 			<b>>> 암호를 입력하세요. <<</b>
-			<form method="post" name="dlt_frm" action="T_delete_ok.jsp?index=<%= index %>">
+			<form method="post" name="dlt_frm" action="T_delete_ok.jsp?index=<%= index %>&pageNum=<%= pageNum %>">
 				<table >
 					<tr height="50">
 						<td width="80">암 호</td>
@@ -25,7 +28,7 @@
 						<td colspan="2">
 							<input type="button" value="글삭제" onclick="delete_ok()">
 							<input type="reset" value="다시작성">
-							<input type="button" value="글목록" onclick="location.href='T_list.jsp'">
+							<input type="button" value="글목록" onclick="location.href='T_list.jsp?pageNum=<%= pageNum %>'">
 						</td>
 					</tr>
 				</table>

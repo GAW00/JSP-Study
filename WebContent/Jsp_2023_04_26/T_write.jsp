@@ -3,6 +3,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%
+	//	전달받는 페이지 번호 저장
+	String pageNum = request.getParameter("pageNum");
+
 	int b_id = 0, b_ref = 1, b_step = 0, b_level = 0;
 	String b_title="";
 	if(request.getParameter("p_index") != null){	// 답변글 : T_show.jsp에서 답변글 누를 시
@@ -90,7 +93,7 @@
 					<td colspan="4">
 						<input type="button" value="글쓰기" onclick="check_ok()">&nbsp;
 						<input type="reset" value="다시작성">&nbsp;
-						<input type="button" value="글목록" onclick="location.href='T_list.jsp'">
+						<input type="button" value="글목록" onclick="location.href='T_list.jsp?pageNum=<%= pageNum %>'">
 					</td>
 				</tr>
 			</table>
