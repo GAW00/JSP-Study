@@ -20,7 +20,6 @@
 // 	ArrayList<BoardBean> board = manager.listBoard();
 	ArrayList<BoardBean> board = manager.listBoard(pageNum);
 	
-	int b_level = 0;
 %>
 <html>
 	<head>
@@ -43,10 +42,11 @@
 			<table width="100%" border="2" cellspacing="0">
 				<tr height="25">
 					<th width="5%">번호</th>
+					<th width="10%">첨부파일</th>
 					<th width="55%">글제목</th>
-					<th width="15%">작성자</th>
+					<th width="10%">작성자</th>
 					<th width="15%">작성일</th>
-					<th width="10%">조회수</th>
+					<th width="5%">조회수</th>
 				</tr>
 				<%
 					for(int i = 0; i < board.size(); i++){
@@ -57,13 +57,23 @@
 						String b_email = data.getB_email();
 						String b_date = data.getB_date2();
 						int b_hit = data.getB_hit();
-						b_level = data.getB_level();
+						int b_level = data.getB_level();
+						int b_fsize = data.getB_fsize();
 						
 						%>
 				
 						<tr height="25" onmouseover="this.style.background = '#ccc'" onmouseout="this.style.background = 'white'">
 							<td align="center">
 								<%= b_id %>
+							</td>
+							<td>
+								<%
+									if(b_fsize > 0){
+										%>
+											<img alt="" src="../images/zip.gif">
+										<%
+									}
+								%>
 							</td>
 							<td>
 								<%

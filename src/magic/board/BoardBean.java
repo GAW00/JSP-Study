@@ -13,9 +13,14 @@ public class BoardBean {
 	private int b_hit;
 	private String b_pwd;
 	private String b_ip;
+	
 	private int b_ref = 0;
 	private int b_step = 0;
 	private int b_level = 0;
+	
+	private String b_fname;
+	private int b_fsize;
+	private String b_rfname;
 	
 	public static int pageSize = 10; // 한 페이지당 10개의 게시물을 출력
 	public static int pageCount = 1; // 총 페이지 수(초기화 1)
@@ -129,6 +134,30 @@ public class BoardBean {
 	}
 	public void setB_level(int b_level) {
 		this.b_level = b_level;
+	}
+
+	public String getB_fname() {
+		return b_fname;
+	}
+
+	public void setB_fname(String b_fname) {
+		this.b_fname = b_fname;
+	}
+
+	public int getB_fsize() {
+		return b_fsize;
+	}
+
+	public void setB_fsize(int b_fsize) {
+		this.b_fsize = b_fsize;
+	}
+
+	public String getB_rfname() {
+		return b_rfname;
+	}
+
+	public void setB_rfname(String b_rfname) {
+		this.b_rfname = b_rfname;
 	}
 	
 }

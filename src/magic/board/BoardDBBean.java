@@ -41,6 +41,11 @@ public class BoardDBBean {
 		int step = board.getB_step();
 		int level = board.getB_level();
 		
+		System.out.println("id : " + id);
+		System.out.println("ref : " + ref);
+		System.out.println("step : " + step);
+		System.out.println("level : " + level);
+		
 		try {
 			conn = getConnection();
 			sql = "SELECT MAX(B_ID) FROM BOARDT";
@@ -65,15 +70,21 @@ public class BoardDBBean {
 				 
 				step += 1;
 				level += 1;
+				
+				System.out.println("답변!");
 			}
 			else {		  // 글번호를 가지고 오지 않는 경우(신규글)
 				ref = number;
 				step = 0;
 				level = 0;
+				System.out.println("신규글!");
 			}
 			
-			sql = "INSERT INTO BOARDT(B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, B_DATE, B_PWD, B_IP, B_REF, B_STEP, B_LEVEL) "
+			sql = "INSERT INTO BOARDT(B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, B_DATE, B_PWD, B_IP"
+					+ ", B_REF, B_STEP, B_LEVEL"
+					+ ", B_FNAME, B_FSIZE, B_RFNAME) "
 					+ "VALUES((SELECT NVL(MAX(B_ID), 0) + 1 FROM BOARDT), ?, ?, ?, ?, ?, ?, ?"
+					+ ", ?, ?, ?"
 					+ ", ?, ?, ?)";
 			
 			pstmt = conn.prepareStatement(sql);
@@ -87,14 +98,23 @@ public class BoardDBBean {
 			pstmt.setInt(8, ref);
 			pstmt.setInt(9, step);
 			pstmt.setInt(10, level);
+			pstmt.setString(11, board.getB_fname());
+			pstmt.setInt(12, board.getB_fsize());
+			pstmt.setString(13, board.getB_rfname());
 			
 			re = pstmt.executeUpdate();
 			
-			pstmt.close();
-			conn.close();
 		} catch (Exception e) {
 			System.out.println("글 작성 실패");
 			e.printStackTrace();
+		} finally {
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			} catch (Exception e2){
+				e2.printStackTrace();
+			}
 		}
 		return re;
 	}
@@ -110,7 +130,8 @@ public class BoardDBBean {
 		int absolutePage = 1; // 게시글 리스트 페이지의 가장 처음 글 번호(B_ID) // 기준
 		
 		String sql = "SELECT B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, TO_CHAR(B_DATE,'YYYY-MM-DD HH24:MM') B_DATE, B_HIT, B_PWD, B_IP"
-				        + ", B_REF, B_STEP, B_LEVEL FROM BOARDT ORDER BY B_REF DESC, B_STEP"; // ref desc => 최신 순, step asc => 답글 순
+				        + ", B_REF, B_STEP, B_LEVEL, B_FNAME, B_FSIZE"
+				        + " FROM BOARDT ORDER BY B_REF DESC, B_STEP"; // ref desc => 최신 순, step asc => 답글 순
 		
 		String sql2 = "SELECT COUNT(B_ID) FROM BOARDT"; 
 		
@@ -170,6 +191,8 @@ public class BoardDBBean {
 					tmp.setB_ref(rs.getInt("B_REF"));
 					tmp.setB_step(rs.getInt("B_STEP"));
 					tmp.setB_level(rs.getInt("B_LEVEL"));
+					tmp.setB_fname(rs.getString("B_FNAME"));
+					tmp.setB_fsize(rs.getInt("B_FSIZE"));
 					
 					result.add(tmp);
 					
@@ -202,6 +225,14 @@ public class BoardDBBean {
 //			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				if(rs != null) rs.close();
+				if(stmt != null) stmt.close();
+				if(conn != null) conn.close();
+			} catch (Exception e2){
+				e2.printStackTrace();
+			}
 		}
 		return result;
 	}
@@ -215,7 +246,7 @@ public class BoardDBBean {
 		String sql = "UPDATE BOARDT SET B_HIT = B_HIT + 1 WHERE B_ID = ?";
 //		String sql2 = "SELECT B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, TO_CHAR(B_DATE,'YYYY-MM-DD HH24:MM') B_DATE, B_HIT, B_PWD FROM BOARDT WHERE B_ID = ?";
 		String sql2 = "SELECT rownum, a.* FROM(SELECT B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, TO_CHAR(B_DATE,'YYYY-MM-DD HH24:MM') B_DATE, B_HIT, B_PWD"
-						+ ", B_IP, B_REF, B_STEP, B_LEVEL FROM BOARDT WHERE B_ID = ?) a";
+						+ ", B_IP, B_REF, B_STEP, B_LEVEL, B_FNAME, B_FSIZE, B_RFNAME FROM BOARDT WHERE B_ID = ?) a";
 //		rownum 받아서 쓰면 글 번호 항상 1234 로 가능 할듯
 		try {
 			conn = getConnection();
@@ -244,13 +275,20 @@ public class BoardDBBean {
 				board.setB_ref(rs.getInt("B_REF"));
 				board.setB_step(rs.getInt("B_STEP"));
 				board.setB_level(rs.getInt("B_LEVEL"));
-				
+				board.setB_fname(rs.getString("B_FNAME"));
+				board.setB_fsize(rs.getInt("B_FSIZE"));
+				board.setB_rfname(rs.getString("B_RFNAME"));
 			}
-			rs.close();
-			pstmt.close();
-			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			} catch (Exception e2){
+				e2.printStackTrace();
+			}
 		}
 		return board;
 	}
@@ -288,7 +326,7 @@ public class BoardDBBean {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		} 
 		return false;
 	}
 	public boolean editBoard(int index, BoardBean board) {
@@ -321,7 +359,45 @@ public class BoardDBBean {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			} catch (Exception e2){
+				e2.printStackTrace();
+			}
 		}
 		return false;
+	}
+	public BoardBean getFileName(int bid) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = "SELECT B_FNAME, B_RFNAME FROM BOARDT WHERE B_ID = ?";
+		BoardBean board = null;
+		
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, bid);
+			rs = pstmt.executeQuery();
+			
+			// 첨부파일이 있으면
+			if(rs.next()) {
+				board = new BoardBean();
+				board.setB_fname(rs.getString("B_FNAME"));
+				board.setB_rfname(rs.getString("B_RFNAME"));
+			}
+		} catch (Exception e) {
+			
+		} finally {
+			try {
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			} catch (Exception e2){
+				e2.printStackTrace();
+			}
+		}
+		return board;
 	}
 }

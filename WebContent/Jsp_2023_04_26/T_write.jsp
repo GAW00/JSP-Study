@@ -6,6 +6,11 @@
 	//	전달받는 페이지 번호 저장
 	String pageNum = request.getParameter("pageNum");
 
+//	전달받는 페이지 번호가 없는 경우 => 첫 페이지
+	if(pageNum == null){
+		pageNum = "1";
+	}
+
 	int b_id = 0, b_ref = 1, b_step = 0, b_level = 0;
 	String b_title="";
 	if(request.getParameter("p_index") != null){	// 답변글 : T_show.jsp에서 답변글 누를 시
@@ -30,7 +35,7 @@
 	<script language="JavaScript" src="board.js"></script>
 	</head>
 	<body>
-		<form method="post" name="board_frm" action="T_write_ok.jsp">
+		<form method="post" name="board_frm" action="T_write_ok.jsp" enctype="multipart/form-data">
 			<input type="hidden" name="b_id" value=<%= b_id %>>
 			<input type="hidden" name="b_ref" value=<%= b_ref%>>
 			<input type="hidden" name="b_step" value=<%= b_step %>>
@@ -74,6 +79,12 @@
 								<%
 							}
 						%>
+					</td>
+				</tr>
+				<tr height="30">
+					<td width="80">파	일</td>
+					<td>
+						<input type="file" name="b_fname" size="40" maxlength="100">
 					</td>
 				</tr>
 				<tr>

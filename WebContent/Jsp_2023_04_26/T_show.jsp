@@ -42,6 +42,29 @@
 							<%= board.getB_date2() %>
 						</td>
 					</tr>
+					<tr height="30" align = center>
+						<th>
+							파&nbsp;일
+						</th>
+						<td colspan="3">
+							&nbsp;
+							<%--
+							<%
+								if(board.getB_fname() != null){
+									%>
+										<img alt="" src="../images/zip.gif">
+										<a href="../upload/<%= board.getB_fname() %>">
+											원본파일 : <%= board.getB_fname() %>
+										</a>
+									<%
+								}
+							%>
+							--%>
+							<%
+								out.print("<p>첨부파일" + "<a href='T_FileDownload.jsp?fileN=" + board.getB_id() + "'>" + board. getB_rfname() + "</a>" + "</p>");
+							%>
+						</td>
+					</tr>
 					<tr height="30">
 						<th align="center">
 							글제목
