@@ -102,6 +102,8 @@ public class BoardDBBean {
 			pstmt.setInt(12, board.getB_fsize());
 			pstmt.setString(13, board.getB_rfname());
 			
+			System.out.println(pstmt); //<<<<<<<<<<<<<<<<<<
+			
 			re = pstmt.executeUpdate();
 			
 		} catch (Exception e) {
@@ -135,6 +137,125 @@ public class BoardDBBean {
 		
 		String sql2 = "SELECT COUNT(B_ID) FROM BOARDT"; 
 		
+		try {
+			conn = getConnection();
+//			stmt = conn.createStatement();
+//			페이지 처리를 위한 메소드 파라미터 추가
+//			TYPE_SCROLL_SENSITIVE : 위치 이동을 자유롭게 하고(rs.next()후 앞오로 다시 올 수 있음) 업데이트 내용 반영, 수정결과 바로 반영
+//			CONCUR_UPDATABLE : 데이터 변경이 가능 하도록
+			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE); 
+//			rs = stmt.executeQuery(sql);
+			pageSet = stmt.executeQuery(sql2);
+			
+			if(pageSet.next()) { // 게시글 총 개수 존재 여부
+				dbCount = pageSet.getInt(1);
+				pageSet.close(); //자원 반납
+			}
+			
+			// 필요한 페이지 수 계산
+			// ex> 총 게시글 수가 84건인 경우
+			// ==> 84 % 10 = 4 페이지(x)
+			// ex> 총 게시글 수가 80건인 경우
+			// ==> 80 % 10 = 8 페이지(o)
+			if(dbCount % BoardBean.pageSize == 0) {
+				BoardBean.pageCount = dbCount / BoardBean.pageSize;
+			}
+			// ==> 84 / 10 + 1 = 9 페이지
+			else {
+				BoardBean.pageCount = dbCount / BoardBean.pageSize + 1;
+			}
+			
+//			페이지별 기준 튜플 번호 설정(absolutePage)
+			if(pageNumber != null) { // 넘겨오는 페이지 번호가 있는 경우
+				BoardBean.pageNum = Integer.parseInt(pageNumber);
+				// ex> 1: 0 * 10 + 1 = 1, 2: 1 * 10 + 1 = 11 => 1페이지는 1, 2페이지는 11
+				absolutePage = (BoardBean.pageNum - 1) * BoardBean.pageSize + 1;
+			}
+			
+			rs = stmt.executeQuery(sql);
+			
+			if(rs.next()) {	// 게시글이 있으면 true
+				rs.absolute(absolutePage); // 페이지 기준 게시글 세팅
+				int count = 0;
+			
+				while(count < BoardBean.pageSize) { // 게시글 개수만큼 반복
+					BoardBean tmp = new BoardBean();
+					
+					tmp.setB_id(rs.getInt("B_ID"));
+					tmp.setB_name(rs.getString("B_NAME"));
+					tmp.setB_email(rs.getString("B_EMAIL"));
+					tmp.setB_title(rs.getString("B_TITLE"));
+					tmp.setB_content(rs.getString("B_CONTENT"));
+					tmp.setB_date2(rs.getString("B_DATE"));
+					tmp.setB_hit(rs.getInt("B_HIT"));
+					tmp.setB_pwd(rs.getString("B_PWD"));
+					tmp.setB_ip(rs.getString("B_IP"));
+					tmp.setB_ref(rs.getInt("B_REF"));
+					tmp.setB_step(rs.getInt("B_STEP"));
+					tmp.setB_level(rs.getInt("B_LEVEL"));
+					tmp.setB_fname(rs.getString("B_FNAME"));
+					tmp.setB_fsize(rs.getInt("B_FSIZE"));
+					
+					result.add(tmp);
+					
+					// 페이지 변경 시 처리위한 로직
+					// 페이지의 마지막 이면 빠져나옴
+					if (rs.isLast()) { 
+						break;
+					} else {
+						rs.next();
+					}
+					count++;
+				}
+			}
+			
+//			while(rs.next()) {
+//				BoardBean tmp = new BoardBean();
+//				tmp.setB_id(rs.getInt("B_ID"));
+//				tmp.setB_name(rs.getString("B_NAME"));
+//				tmp.setB_email(rs.getString("B_EMAIL"));
+//				tmp.setB_title(rs.getString("B_TITLE"));
+//				tmp.setB_content(rs.getString("B_CONTENT"));
+//				tmp.setB_date2(rs.getString("B_DATE"));
+//				tmp.setB_hit(rs.getInt("B_HIT"));
+//				tmp.setB_pwd(rs.getString("B_PWD"));
+//				tmp.setB_ip(rs.getString("B_IP"));
+//				tmp.setB_ref(rs.getInt("B_REF"));
+//				tmp.setB_step(rs.getInt("B_STEP"));
+//				tmp.setB_level(rs.getInt("B_LEVEL"));
+//				result.add(tmp);
+//			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(rs != null) rs.close();
+				if(stmt != null) stmt.close();
+				if(conn != null) conn.close();
+			} catch (Exception e2){
+				e2.printStackTrace();
+			}
+		}
+		return result;
+	}
+	public ArrayList<BoardBean> listBoard_s(String title, String pageNumber){
+		ArrayList<BoardBean> result = new ArrayList<BoardBean>();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		
+		ResultSet pageSet = null; // 게시판 리스트 페이지 결과 값
+		int dbCount = 0; // 게시글 총 개수
+		int absolutePage = 1; // 게시글 리스트 페이지의 가장 처음 글 번호(B_ID) // 기준
+		
+		String sql = "SELECT B_ID, B_NAME, B_EMAIL, B_TITLE, B_CONTENT, TO_CHAR(B_DATE,'YYYY-MM-DD HH24:MM') B_DATE, B_HIT, B_PWD, B_IP"
+				        + ", B_REF, B_STEP, B_LEVEL, B_FNAME, B_FSIZE"
+				        + " FROM BOARDT "
+				        + " WHERE B_TITLE LIKE '%" + title + "%'"
+				        + " ORDER BY B_REF DESC, B_STEP";
+		
+		String sql2 = "SELECT COUNT(B_ID) FROM BOARDT WHERE B_TITLE LIKE '%" + title + "%'"; 
+		System.out.println("========SQL2 : " + sql2);
 		try {
 			conn = getConnection();
 //			stmt = conn.createStatement();
@@ -400,4 +521,5 @@ public class BoardDBBean {
 		}
 		return board;
 	}
+	
 }

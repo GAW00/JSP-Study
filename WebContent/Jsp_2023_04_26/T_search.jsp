@@ -9,6 +9,7 @@
     pageEncoding="UTF-8"%>
 <%
 // 	전달받는 페이지 번호 저장
+	String search = request.getParameter("search");
 	String pageNum = request.getParameter("pageNum");
 
 // 	전달받는 페이지 번호가 없는 경우 => 첫 페이지
@@ -18,7 +19,9 @@
 
 	BoardDBBean manager = BoardDBBean.getInstance();
 // 	ArrayList<BoardBean> board = manager.listBoard();
-	ArrayList<BoardBean> board = manager.listBoard(pageNum);
+// 	pageNum = manager.searchTitle(search);
+// 	String search_title = manager.searchTitle(search);
+	ArrayList<BoardBean> board = manager.listBoard_s(search, pageNum);
 	
 %>
 <html>
@@ -28,7 +31,7 @@
 	</head>
 	<body>
 		<center>
-			<h1 align="center">게시판에 등록된 글 목록 보기</h1>
+			<h1 align="center">검색한 글 목록 보기</h1>
 			<form method="post" action="T_search.jsp">
 				<table width="80%">
 					<tr height="25">
@@ -36,7 +39,7 @@
 	<!-- 					<td colspan="2" width="75%"></td> -->
 						<td width="10%"></td>
 						<td width="65%">
-							<input type="text" name="search"> <input type="submit" value="검색">
+							<input type="text" name="search">  <input type="submit" value="검색">
 						</td>
 						<td width="20%">
 		<!-- 					<a href="T_write.jsp">글 쓰 기</a> -->
@@ -112,8 +115,10 @@
 					}
 				%>
 			</table>
+				<% if(board.size() == 0) %> <h3>검색 결과가 없습니다..</h3>
 <!-- 			4 페이지씩 표시 -->
 			<%= BoardBean.pageNumber(4) %>
 		</center>
+		<input type="button" value="글목록" onclick="location.href='T_list.jsp?pageNum=<%= pageNum %>'">
 	</body>
 </html>
